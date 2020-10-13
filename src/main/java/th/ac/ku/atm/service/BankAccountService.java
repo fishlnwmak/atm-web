@@ -7,18 +7,17 @@ import th.ac.ku.atm.model.BankAccount;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class BankAccountService {
-    private List<BankAccount> bankAccounts;
     private RestTemplate restTemplate;
     public BankAccountService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
     public List<BankAccount> getCustomerBankAccount(int customerId) {
-        String url = "http://localhost:8091/api/bankaccount/customer" +
+        String url = "http://localhost:8091/api/bankaccount/customer/" +
                 customerId;
         ResponseEntity<BankAccount[]> response =
                 restTemplate.getForEntity(url, BankAccount[].class);
@@ -27,14 +26,31 @@ public class BankAccountService {
 
         return Arrays.asList(accounts);
     }
+
     public List<BankAccount> getBankAccounts() {
         String url = "http://localhost:8091/api/bankaccount";
 
-        ResponseEntity<BankAccount[]> response = restTemplate.getForEntity(url, BankAccount[].class);
+        ResponseEntity<BankAccount[]> response =
+                restTemplate.getForEntity(url, BankAccount[].class);
 
         BankAccount[] accounts = response.getBody();
         return Arrays.asList(accounts);
     }
+
+    public void openAccount(BankAccount bankAccount) {
+        String url = "http://localhost:8091/api/bankaccount";
+
+        restTemplate.postForObject(url, bankAccount, BankAccount.class);
+    }
+    private List<BankAccount> bankAccounts;
+    @PostConstruct
+    public void BankAccountService(){
+        bankAccounts = new ArrayList<>();
+    }
+    public void CreateAccount(BankAccount bankAccount) {
+        bankAccounts.add(bankAccount);
+    }
+
     public BankAccount getBankAccount(int id) {
         String url = "http://localhost:8091/api/bankaccount/" + id;
 
@@ -51,21 +67,8 @@ public class BankAccountService {
     }
 
 
-    public void openAccount(BankAccount bankAccount) {
-        String url = "http://localhost:8091/api/bankaccount";
-        restTemplate.postForObject(url, bankAccount, BankAccount.class);
-    }
-    @PostConstruct
-    public void BankAccountService(){
-        bankAccounts = new ArrayList<>();
-    }
-
-    public void CreateAccount(BankAccount bankAccount){
-        bankAccounts.add(bankAccount);
-    }
-
-
-
-
-
 }
+
+
+
+
